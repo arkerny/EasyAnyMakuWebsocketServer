@@ -10,8 +10,18 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # 读取配置文件
-with open("config.yaml", "r", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
+try:
+    with open("config.yaml", "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    logger.info("配置文件 config.yaml 加载成功。")
+    logger.debug(f"配置内容: {config}")
+except FileNotFoundError:
+    logger.error("配置文件 config.yaml 未找到，使用默认配置。")
+    config = {
+        "message_interval": 2,
+        "host": "127.0.0.1",
+        "port": 8080
+    }
 
 # 模拟一些弹幕内容
 MESSAGES = [
@@ -27,7 +37,7 @@ MESSAGES = [
 USERS = ["爱写代码的小王", "路人甲", "弹幕狂魔", "Tauri初学者", "Python后端"]
 
 async def handler(websocket):
-    logging.info(f"客户端已连接: {websocket.remote_address}")
+    logger.info(f"客户端已连接: {websocket.remote_address}")
     try:
         while True:
             # 构造符合要求的 JSON 数据
@@ -37,16 +47,16 @@ async def handler(websocket):
             }
             # 发送数据
             await websocket.send(json.dumps(data))
-            logging.info(f"已发送: {data['text']}")
+            logger.info(f"已发送: {data['text']}")
             # 每隔 2 秒发送一次
             await asyncio.sleep(config.get("message_interval", 2))
     except websockets.exceptions.ConnectionClosed:
-        logging.warning(f"客户端已断开连接: {websocket.remote_address}")
+        logger.warning(f"客户端已断开连接: {websocket.remote_address}")
 
 async def main():
     # 监听本地 8080 端口
     async with websockets.serve(handler, config.get("host", "127.0.0.1"), config.get("port", 8080)):
-        logging.info(f"WS 服务器已启动: ws://{config.get('host', '127.0.0.1')}:{config.get('port', 8080)}")
+        logger.info(f"服务已启动: ws://{config.get('host', '127.0.0.1')}:{config.get('port', 8080)}")
         # 修复行：创建一个永久等待的事件
         await asyncio.Event().wait() 
 
@@ -54,4 +64,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logging.info("服务器已停止")
+        logger.info("服务器已停止")
