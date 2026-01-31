@@ -16,25 +16,48 @@ try:
     logger.info("配置文件 config.yaml 加载成功。")
     logger.debug(f"配置内容: {config}")
 except FileNotFoundError:
-    logger.error("配置文件 config.yaml 未找到，使用默认配置。")
+    logger.error("配置文件 config.yaml 未找到，创建默认配置文件。")
     config = {
         "message_interval": 2,
         "host": "127.0.0.1",
         "port": 8080
     }
+    with open("config.yaml", "w", encoding="utf-8") as f:
+        yaml.dump(config, f)
+    logger.info("已创建默认配置文件 config.yaml。")
 
 # 模拟一些弹幕内容
-MESSAGES = [
-    "这就是传说中的弹幕吗？",
-    "666666666",
-    "测试一条超长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的弹幕看看会不会重叠",
-    "Vue + Tauri 看起来真不错",
-    "Rust 写的后端就是稳",
-    "前端避重叠算法生效了吗？"
-]
+try:
+    with open("messages.txt", "r", encoding="utf-8") as f:
+        MESSAGES = [line.strip() for line in f if line.strip()]
+    logger.info("弹幕内容 messages.txt 加载成功。")
+except FileNotFoundError:
+    logger.error("弹幕内容 messages.txt 未找到，创建默认弹幕内容文件。")
+    MESSAGES = [
+        "这就是传说中的弹幕吗？",
+        "666666666",
+        "测试一条超长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的弹幕看看会不会重叠",
+        "Vue + Tauri 看起来真不错",
+        "Rust 写的后端就是稳",
+        "前端避重叠算法生效了吗？"
+    ]
+    with open("messages.txt", "w", encoding="utf-8") as f:
+        for msg in MESSAGES:
+            f.write(msg + "\n")
+    logger.info("已创建默认弹幕内容文件 messages.txt。")
 
 # 模拟一些用户昵称
-USERS = ["爱写代码的小王", "路人甲", "弹幕狂魔", "Tauri初学者", "Python后端"]
+try:
+    with open("users.txt", "r", encoding="utf-8") as f:
+        USERS = [line.strip() for line in f if line.strip()]
+    logger.info("用户昵称 users.txt 加载成功。")
+except FileNotFoundError:
+    logger.error("用户昵称 users.txt 未找到，创建默认用户昵称文件。")
+    USERS = ["爱写代码的小王", "路人甲", "弹幕狂魔", "Tauri初学者", "Python后端"]
+    with open("users.txt", "w", encoding="utf-8") as f:
+        for user in USERS:
+            f.write(user + "\n")
+    logger.info("已创建默认用户昵称文件 users.txt。")
 
 async def handler(websocket):
     logger.info(f"客户端已连接: {websocket.remote_address}")
