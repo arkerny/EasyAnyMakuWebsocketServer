@@ -4,13 +4,13 @@ An Easy Websocket Server for the dev of AnyMaku.
 
 ## How to use it?
 
-1. Run with Pre-Build Versions
+### Run with Pre-Build Versions
 
 Download from the release.
 
 Only provide Windows versions.
 
-2. Run with Code
+### Run with Code
 
 python >= 3.13.7
 
